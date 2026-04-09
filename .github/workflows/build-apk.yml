@@ -1,11 +1,14 @@
 name: Build TensorFlow Lite Image Classification APK
 
 on:
-  workflow_dispatch:   # Lancer manuellement
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true   # Supprime le warning Node.js 20
 
     steps:
       - name: Checkout repository
@@ -35,14 +38,15 @@ jobs:
         run: |
           yes | sdkmanager --licenses
           sdkmanager "platform-tools" \
-                     "platforms;android-32" \
-                     "build-tools;32.0.0" \
+                     "platforms;android-34" \
+                     "build-tools;34.0.0" \
                      "cmdline-tools;latest"
 
       - name: Build Debug APK
         run: |
           cd lite/examples/image_classification/android
           chmod +x ./gradlew
+          ./gradlew clean
           ./gradlew assembleDebug --stacktrace --info
 
       - name: Upload APK artifact
